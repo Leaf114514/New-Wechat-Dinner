@@ -1,6 +1,7 @@
 {
   "pages": [
     "pages/index/index",
+    "pages/order/index",
     "pages/profile/index",
     "pages/example/index"
   ],
@@ -22,6 +23,12 @@
         "text": "首页",
         "iconPath": "images/icons/home.png",
         "selectedIconPath": "images/icons/home-active.png"
+      },
+      {
+        "pagePath": "pages/order/index",
+        "text": "点餐",
+        "iconPath": "images/icons/goods.png",
+        "selectedIconPath": "images/icons/goods-active.png"
       },
       {
         "pagePath": "pages/profile/index",

@@ -1,0 +1,5 @@
+/* 点餐页样式：保留基础空白布局，方便后续模块化扩展。 */
+.order-page {
+  min-height: 100vh;
+  background-color: #f7f7f7;
+}
