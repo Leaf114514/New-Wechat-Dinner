@@ -1,0 +1,5 @@
+/* 占位页样式：保持与首页一致的空白底色。 */
+.profile-page {
+  min-height: 100vh;
+  background-color: #f7f7f7;
+}
