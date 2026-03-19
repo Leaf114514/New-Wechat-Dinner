@@ -1,0 +1,25 @@
+<!-- 授权页：保持单按钮入口，头像选择后自动进入昵称填写。 -->
+<view class="auth-page">
+  <view class="auth-card">
+    <view class="auth-title">{{pageTitle}}</view>
+    <view class="auth-desc">{{pageDesc}}</view>
+    <image class="avatar-image" src="{{avatarUrl}}" mode="aspectFill"></image>
+    <button class="login-button" open-type="chooseAvatar" bindchooseavatar="onChooseAvatar">
+      {{buttonText}}
+    </button>
+    <input
+      wx:if="{{showNicknameInput}}"
+      class="nickname-input"
+      type="nickname"
+      placeholder="请输入昵称"
+      value="{{nickName}}"
+      focus="{{nicknameInputFocused}}"
+      confirm-type="done"
+      bindinput="onNicknameInput"
+      bindconfirm="onNicknameConfirm"
+      bindblur="onNicknameBlur"
+    />
+    <text class="auth-step">{{stepText}}</text>
+    <text class="auth-tip">{{tipText}}</text>
+  </view>
+</view>

@@ -1,0 +1,83 @@
+/* 授权页样式：保持轻量布局，便于后续独立扩展授权模块。 */
+.auth-page {
+  min-height: 100vh;
+  padding: 120rpx 40rpx 40rpx;
+  box-sizing: border-box;
+  background: linear-gradient(180deg, #f7f8fb 0%, #eef3ff 100%);
+}
+
+.auth-card {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 72rpx 40rpx 56rpx;
+  border-radius: 32rpx;
+  background-color: #ffffff;
+  box-shadow: 0 24rpx 60rpx rgba(31, 107, 255, 0.08);
+}
+
+.auth-title {
+  color: #1f2329;
+  font-size: 42rpx;
+  font-weight: 600;
+  line-height: 1.4;
+}
+
+.auth-desc {
+  margin-top: 16rpx;
+  color: #6b7280;
+  font-size: 26rpx;
+  line-height: 1.7;
+  text-align: center;
+}
+
+.avatar-image {
+  width: 176rpx;
+  height: 176rpx;
+  margin-top: 40rpx;
+  border-radius: 50%;
+  background-color: #f3f5f9;
+}
+
+.nickname-input {
+  width: 100%;
+  height: 88rpx;
+  margin-top: 28rpx;
+  padding: 0 28rpx;
+  box-sizing: border-box;
+  border-radius: 20rpx;
+  background-color: #f5f7fb;
+  color: #1f2329;
+  font-size: 30rpx;
+}
+
+.login-button {
+  width: 100%;
+  height: 88rpx;
+  margin-top: 28rpx;
+  border-radius: 20rpx;
+  background: linear-gradient(135deg, #1f6bff 0%, #4a8cff 100%);
+  color: #ffffff;
+  font-size: 30rpx;
+  font-weight: 600;
+  line-height: 88rpx;
+}
+
+.login-button::after {
+  border: none;
+}
+
+.auth-step {
+  margin-top: 24rpx;
+  color: #1f6bff;
+  font-size: 24rpx;
+  font-weight: 500;
+}
+
+.auth-tip {
+  margin-top: 20rpx;
+  color: #6b7280;
+  font-size: 26rpx;
+  line-height: 1.7;
+  text-align: center;
+}

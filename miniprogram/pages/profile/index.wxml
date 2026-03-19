@@ -1,2 +1,8 @@
-<!-- 占位页面：当前不放业务内容，仅保留空白结构。 -->
-<view class="profile-page"></view>
+<!-- 我的页面：展示当前登录用户的头像与昵称。 -->
+<view class="profile-page">
+  <view class="profile-card">
+    <image class="profile-avatar" src="{{avatarUrl}}" mode="aspectFill"></image>
+    <view class="profile-name">{{nickName}}</view>
+    <view class="profile-status">{{statusText}}</view>
+  </view>
+</view>

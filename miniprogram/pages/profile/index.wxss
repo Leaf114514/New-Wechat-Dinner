@@ -1,5 +1,39 @@
-/* 占位页样式：保持与首页一致的空白底色。 */
+/* 我的页样式：保持独立展示结构，方便后续扩展个人中心模块。 */
 .profile-page {
   min-height: 100vh;
-  background-color: #f7f7f7;
+  padding: 48rpx 32rpx;
+  box-sizing: border-box;
+  background: linear-gradient(180deg, #f7f8fb 0%, #eef3ff 100%);
+}
+
+.profile-card {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 72rpx 32rpx 64rpx;
+  border-radius: 32rpx;
+  background-color: #ffffff;
+  box-shadow: 0 24rpx 60rpx rgba(31, 107, 255, 0.08);
+}
+
+.profile-avatar {
+  width: 176rpx;
+  height: 176rpx;
+  border-radius: 50%;
+  background-color: #f3f5f9;
+}
+
+.profile-name {
+  margin-top: 28rpx;
+  color: #1f2329;
+  font-size: 38rpx;
+  font-weight: 600;
+}
+
+.profile-status {
+  margin-top: 16rpx;
+  color: #6b7280;
+  font-size: 26rpx;
+  line-height: 1.7;
+  text-align: center;
 }
