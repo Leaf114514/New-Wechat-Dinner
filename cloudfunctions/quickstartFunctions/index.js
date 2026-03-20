@@ -4,9 +4,23 @@ cloud.init({
 });
 
 const db = cloud.database();
-// 获取openid
+const USER_PROFILE_COLLECTION = "userProfiles";
+
+// 确保集合存在：首次写入用户资料时自动创建集合。
+const ensureCollectionExists = async (collectionName) => {
+  try {
+    await db.createCollection(collectionName);
+  } catch (error) {
+    const errorText = `${error.errMsg || error.message || ""}`;
+
+    if (!errorText.includes("already exists")) {
+      console.log(`createCollection skip: ${collectionName}`, error);
+    }
+  }
+};
+
+// 获取 openid。
 const getOpenId = async () => {
-  // 获取基础信息
   const wxContext = cloud.getWXContext();
   return {
     openid: wxContext.OPENID,
@@ -15,14 +29,12 @@ const getOpenId = async () => {
   };
 };
 
-// 获取小程序二维码
+// 获取小程序二维码。
 const getMiniProgramCode = async () => {
-  // 获取小程序二维码的buffer
   const resp = await cloud.openapi.wxacode.get({
     path: "pages/index/index",
   });
   const { buffer } = resp;
-  // 将图片上传云存储空间
   const upload = await cloud.uploadFile({
     cloudPath: "code.png",
     fileContent: buffer,
@@ -30,13 +42,11 @@ const getMiniProgramCode = async () => {
   return upload.fileID;
 };
 
-// 创建集合
+// 创建示例集合。
 const createCollection = async () => {
   try {
-    // 创建集合
     await db.createCollection("sales");
     await db.collection("sales").add({
-      // data 字段表示需新增的 JSON 数据
       data: {
         region: "华东",
         city: "上海",
@@ -44,7 +54,6 @@ const createCollection = async () => {
       },
     });
     await db.collection("sales").add({
-      // data 字段表示需新增的 JSON 数据
       data: {
         region: "华东",
         city: "南京",
@@ -52,7 +61,6 @@ const createCollection = async () => {
       },
     });
     await db.collection("sales").add({
-      // data 字段表示需新增的 JSON 数据
       data: {
         region: "华南",
         city: "广州",
@@ -60,7 +68,6 @@ const createCollection = async () => {
       },
     });
     await db.collection("sales").add({
-      // data 字段表示需新增的 JSON 数据
       data: {
         region: "华南",
         city: "深圳",
@@ -70,8 +77,7 @@ const createCollection = async () => {
     return {
       success: true,
     };
-  } catch (e) {
-    // 这里catch到的是该collection已经存在，从业务逻辑上来说是运行成功的，所以catch返回success给前端，避免工具在前端抛出异常
+  } catch (error) {
     return {
       success: true,
       data: "create collection success",
@@ -79,16 +85,14 @@ const createCollection = async () => {
   }
 };
 
-// 查询数据
+// 查询示例数据。
 const selectRecord = async () => {
-  // 返回数据库查询结果
   return await db.collection("sales").get();
 };
 
-// 更新数据
+// 更新示例数据。
 const updateRecord = async (event) => {
   try {
-    // 遍历修改数据库信息
     for (let i = 0; i < event.data.length; i++) {
       await db
         .collection("sales")
@@ -105,19 +109,18 @@ const updateRecord = async (event) => {
       success: true,
       data: event.data,
     };
-  } catch (e) {
+  } catch (error) {
     return {
       success: false,
-      errMsg: e,
+      errMsg: error,
     };
   }
 };
 
-// 新增数据
+// 新增示例数据。
 const insertRecord = async (event) => {
   try {
     const insertRecord = event.data;
-    // 插入数据
     await db.collection("sales").add({
       data: {
         region: insertRecord.region,
@@ -129,15 +132,15 @@ const insertRecord = async (event) => {
       success: true,
       data: event.data,
     };
-  } catch (e) {
+  } catch (error) {
     return {
       success: false,
-      errMsg: e,
+      errMsg: error,
     };
   }
 };
 
-// 删除数据
+// 删除示例数据。
 const deleteRecord = async (event) => {
   try {
     await db
@@ -149,22 +152,126 @@ const deleteRecord = async (event) => {
     return {
       success: true,
     };
-  } catch (e) {
+  } catch (error) {
     return {
       success: false,
-      errMsg: e,
+      errMsg: error,
     };
   }
 };
 
-// const getOpenId = require('./getOpenId/index');
-// const getMiniProgramCode = require('./getMiniProgramCode/index');
-// const createCollection = require('./createCollection/index');
-// const selectRecord = require('./selectRecord/index');
-// const updateRecord = require('./updateRecord/index');
-// const fetchGoodsList = require('./fetchGoodsList/index');
-// const genMpQrcode = require('./genMpQrcode/index');
-// 云函数入口函数
+// 写入用户资料：按 openid 更新或新增用户资料记录。
+const upsertUserProfile = async (event) => {
+  try {
+    const wxContext = cloud.getWXContext();
+    const { nickName = "", avatarFileId = "" } = event.data || {};
+
+    if (!nickName || !avatarFileId) {
+      return {
+        success: false,
+        errMsg: "nickName and avatarFileId are required",
+      };
+    }
+
+    await ensureCollectionExists(USER_PROFILE_COLLECTION);
+    const userProfileCollection = db.collection(USER_PROFILE_COLLECTION);
+    const existingResult = await userProfileCollection
+      .where({
+        openid: wxContext.OPENID,
+      })
+      .limit(1)
+      .get();
+
+    const userProfileData = {
+      openid: wxContext.OPENID,
+      nickName,
+      avatarFileId,
+      updatedAt: db.serverDate(),
+    };
+
+    if (existingResult.data.length) {
+      const existingRecord = existingResult.data[0];
+
+      await userProfileCollection.doc(existingRecord._id).update({
+        data: userProfileData,
+      });
+
+      return {
+        success: true,
+        userProfile: {
+          _id: existingRecord._id,
+          openid: wxContext.OPENID,
+          nickName,
+          avatarFileId,
+        },
+      };
+    }
+
+    const addResult = await userProfileCollection.add({
+      data: {
+        ...userProfileData,
+        createdAt: db.serverDate(),
+      },
+    });
+
+    return {
+      success: true,
+      userProfile: {
+        _id: addResult._id,
+        openid: wxContext.OPENID,
+        nickName,
+        avatarFileId,
+      },
+    };
+  } catch (error) {
+    return {
+      success: false,
+      errMsg: error.message || error.errMsg || "upsert user profile failed",
+    };
+  }
+};
+
+// 读取用户资料：按 openid 获取当前用户的资料记录。
+const getUserProfile = async () => {
+  try {
+    const wxContext = cloud.getWXContext();
+
+    await ensureCollectionExists(USER_PROFILE_COLLECTION);
+    const userProfileResult = await db
+      .collection(USER_PROFILE_COLLECTION)
+      .where({
+        openid: wxContext.OPENID,
+      })
+      .limit(1)
+      .get();
+
+    if (!userProfileResult.data.length) {
+      return {
+        success: true,
+        userProfile: null,
+      };
+    }
+
+    const userProfile = userProfileResult.data[0];
+
+    return {
+      success: true,
+      userProfile: {
+        _id: userProfile._id,
+        openid: userProfile.openid,
+        nickName: userProfile.nickName,
+        avatarFileId: userProfile.avatarFileId,
+      },
+    };
+  } catch (error) {
+    return {
+      success: false,
+      errMsg: error.message || error.errMsg || "get user profile failed",
+    };
+  }
+};
+
+// 云函数入口函数。
 exports.main = async (event, context) => {
   switch (event.type) {
     case "getOpenId":
@@ -181,5 +288,14 @@ exports.main = async (event, context) => {
       return await insertRecord(event);
     case "deleteRecord":
       return await deleteRecord(event);
+    case "upsertUserProfile":
+      return await upsertUserProfile(event);
+    case "getUserProfile":
+      return await getUserProfile();
+    default:
+      return {
+        success: false,
+        errMsg: "unsupported function type",
+      };
   }
 };

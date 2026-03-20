@@ -1,8 +1,9 @@
-<!-- 我的页面：展示当前登录用户的头像与昵称。 -->
+<!-- 我的页面：展示当前登录用户的头像与昵称，并提供退出登录入口。 -->
 <view class="profile-page">
   <view class="profile-card">
     <image class="profile-avatar" src="{{avatarUrl}}" mode="aspectFill"></image>
     <view class="profile-name">{{nickName}}</view>
     <view class="profile-status">{{statusText}}</view>
+    <button class="logout-button" bindtap="handleLogout">退出登录</button>
   </view>
 </view>

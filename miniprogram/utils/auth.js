@@ -11,14 +11,19 @@ function saveUserProfile(userProfile) {
   wx.setStorageSync(USER_PROFILE_STORAGE_KEY, userProfile);
 }
 
+// 清理本地缓存的用户资料。
+function clearUserProfile() {
+  wx.removeStorageSync(USER_PROFILE_STORAGE_KEY);
+}
+
 // 判断当前是否已有可用的用户资料。
 function hasUserProfile() {
   const userProfile = getUserProfile();
 
   return Boolean(
     userProfile &&
-      userProfile.avatarUrl &&
-      userProfile.nickName
+      userProfile.nickName &&
+      (userProfile.avatarFileId || userProfile.avatarUrl)
   );
 }
 
@@ -26,5 +31,6 @@ module.exports = {
   USER_PROFILE_STORAGE_KEY,
   getUserProfile,
   saveUserProfile,
+  clearUserProfile,
   hasUserProfile,
 };

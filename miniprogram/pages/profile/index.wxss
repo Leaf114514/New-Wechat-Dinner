@@ -37,3 +37,19 @@
   line-height: 1.7;
   text-align: center;
 }
+
+.logout-button {
+  width: 100%;
+  height: 88rpx;
+  margin-top: 40rpx;
+  border-radius: 20rpx;
+  background: linear-gradient(135deg, #f97316 0%, #fb923c 100%);
+  color: #ffffff;
+  font-size: 30rpx;
+  font-weight: 600;
+  line-height: 88rpx;
+}
+
+.logout-button::after {
+  border: none;
+}
